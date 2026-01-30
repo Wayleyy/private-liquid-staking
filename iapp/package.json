@@ -1,0 +1,25 @@
+{
+  "name": "private-liquid-staking-iapp",
+  "version": "1.0.0",
+  "description": "iExec iApp for confidential reward computation in Private Liquid Staking",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "node src/app.js '{\"action\": \"calculate_rewards\"}'"
+  },
+  "dependencies": {
+    "@iexec/dataprotector": "^3.0.0",
+    "ethers": "^6.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "iexec",
+    "tee",
+    "confidential-computing",
+    "liquid-staking",
+    "defi"
+  ],
+  "license": "MIT"
+}

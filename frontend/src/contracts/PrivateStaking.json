@@ -1,0 +1,110 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        { "name": "_stakingAsset", "type": "address", "internalType": "address" },
+        { "name": "_plsToken", "type": "address", "internalType": "address" }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "stake",
+      "inputs": [
+        { "name": "amount", "type": "uint256", "internalType": "uint256" },
+        { "name": "salt", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [
+        { "name": "commitment", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "unstake",
+      "inputs": [
+        { "name": "amount", "type": "uint256", "internalType": "uint256" },
+        { "name": "salt", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "totalStaked",
+      "inputs": [],
+      "outputs": [
+        { "name": "", "type": "uint256", "internalType": "uint256" }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "stakeCommitments",
+      "inputs": [
+        { "name": "", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [
+        { "name": "", "type": "bool", "internalType": "bool" }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "userCommitments",
+      "inputs": [
+        { "name": "", "type": "address", "internalType": "address" },
+        { "name": "", "type": "uint256", "internalType": "uint256" }
+      ],
+      "outputs": [
+        { "name": "", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "setTEEOracle",
+      "inputs": [
+        { "name": "_teeOracle", "type": "address", "internalType": "address" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "Staked",
+      "inputs": [
+        { "name": "user", "type": "address", "indexed": true, "internalType": "address" },
+        { "name": "commitment", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "plsReceived", "type": "uint256", "indexed": false, "internalType": "uint256" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Unstaked",
+      "inputs": [
+        { "name": "user", "type": "address", "indexed": true, "internalType": "address" },
+        { "name": "commitment", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "ZeroAmount",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "CommitmentAlreadyExists",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "CommitmentNotFound",
+      "inputs": []
+    }
+  ]
+}
