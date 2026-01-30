@@ -51,7 +51,7 @@ const TransactionHistory = ({ account, provider }) => {
   }
 
   const getExplorerUrl = (txHash) => {
-    return `https://sepolia.arbiscan.io/tx/${txHash}`
+    return `https://arbiscan.io/tx/${txHash}`
   }
 
   if (loading) {

@@ -6,7 +6,7 @@ import PLSTokenABI from '../contracts/PLSToken.json'
 const CONTRACTS = {
   privateStaking: import.meta.env.VITE_PRIVATE_STAKING_ADDRESS || '',
   plsToken: import.meta.env.VITE_PLS_TOKEN_ADDRESS || '',
-  stakingAsset: import.meta.env.VITE_STAKING_ASSET_ADDRESS || '0x980B62Da83eFf3D4576C647993b0c1D7faf17c73', // WETH Arbitrum Sepolia
+  stakingAsset: import.meta.env.VITE_STAKING_ASSET_ADDRESS || '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH Arbitrum Mainnet
 }
 
 /**

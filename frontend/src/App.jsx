@@ -22,14 +22,23 @@ function App() {
   const [plsBalance, setPlsBalance] = useState('0')
   const [teeStatus, setTeeStatus] = useState({ active: false, taskId: null })
   const [showTeeProof, setShowTeeProof] = useState(false)
+  const [totalStaked, setTotalStaked] = useState('0')
+  const [wethBalance, setWethBalance] = useState('0')
+  const [apy, setApy] = useState('5.2')
 
-  const mockData = {
-    totalStaked: '2,847.32',
-    yourStake: '***.**',
-    yourStakeRevealed: '125.50',
-    pendingRewards: '**.**',
-    pendingRewardsRevealed: '2.45',
-    apy: '5.2'
+  // Calculate dynamic APY based on total staked
+  // Lower TVL = Higher APY (to incentivize early stakers)
+  // Higher TVL = Lower APY (sustainable long-term)
+  const calculateAPY = (totalStakedAmount) => {
+    const staked = parseFloat(totalStakedAmount)
+    
+    if (staked === 0) return '8.5' // Initial high APY
+    if (staked < 10) return '7.5'
+    if (staked < 50) return '6.5'
+    if (staked < 100) return '5.5'
+    if (staked < 500) return '4.8'
+    if (staked < 1000) return '4.2'
+    return '3.5' // Minimum APY for high TVL
   }
 
   // Check if wallet is already connected on mount
@@ -85,13 +94,32 @@ function App() {
     try {
       if (!provider || !account) return
       
+      // Get native ETH balance
       const balance = await provider.getBalance(account)
       setEthBalance(ethers.formatEther(balance))
       
-      // Get PLS token balance from contract
       if (areContractsConfigured()) {
+        // Get PLS token balance
         const plsBalance = await getPLSBalance(provider, account)
         setPlsBalance(plsBalance)
+        
+        // Get total staked from contract
+        const total = await getTotalStaked(provider)
+        setTotalStaked(total)
+        
+        // Calculate dynamic APY
+        const dynamicAPY = calculateAPY(total)
+        setApy(dynamicAPY)
+        
+        // Get WETH balance
+        const { ethers: ethersLib } = await import('ethers')
+        const wethContract = new ethersLib.Contract(
+          '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+          ['function balanceOf(address) view returns (uint256)'],
+          provider
+        )
+        const wethBal = await wethContract.balanceOf(account)
+        setWethBalance(ethersLib.formatEther(wethBal))
       }
     } catch (error) {
       console.error('Error updating balances:', error)
@@ -116,13 +144,13 @@ function App() {
       const web3Provider = new ethers.BrowserProvider(window.ethereum)
       const web3Signer = await web3Provider.getSigner()
       
-      // Check network (Arbitrum Sepolia = 421614)
+      // Check network (Arbitrum Mainnet = 42161)
       const network = await web3Provider.getNetwork()
-      if (network.chainId !== 421614n) {
+      if (network.chainId !== 42161n) {
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x66eee' }], // 421614 in hex
+            params: [{ chainId: '0xa4b1' }], // 42161 in hex
           })
         } catch (switchError) {
           // Chain not added, add it
@@ -130,15 +158,15 @@ function App() {
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [{
-                chainId: '0x66eee',
-                chainName: 'Arbitrum Sepolia',
+                chainId: '0xa4b1',
+                chainName: 'Arbitrum One',
                 nativeCurrency: {
                   name: 'ETH',
                   symbol: 'ETH',
                   decimals: 18
                 },
-                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-                blockExplorerUrls: ['https://sepolia.arbiscan.io/']
+                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://arbiscan.io/']
               }]
             })
           } else {
@@ -427,8 +455,8 @@ function App() {
               <span className="text-xs sm:text-sm text-gray-500">Total Value Locked</span>
               <Coins className="w-4 h-4 sm:w-5 sm:h-5 text-primary/60 group-hover:text-primary transition-colors" />
             </div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">{mockData.totalStaked}</div>
-            <div className="text-xs text-gray-600 mt-1">ETH</div>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">{parseFloat(totalStaked).toFixed(2)}</div>
+            <div className="text-xs text-gray-600 mt-1">WETH</div>
           </div>
 
           <div className="card group hover:border-green-500/30 transition-all duration-300">
@@ -436,7 +464,7 @@ function App() {
               <span className="text-xs sm:text-sm text-gray-500">Current APY</span>
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-500/60 group-hover:text-green-500 transition-colors" />
             </div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-500">{mockData.apy}%</div>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-500">{apy}%</div>
             <div className="text-xs text-gray-600 mt-1">Annual yield</div>
           </div>
 
@@ -454,12 +482,9 @@ function App() {
               </button>
             </div>
             <div className="text-xl sm:text-2xl lg:text-3xl font-bold">
-              {showPrivateData ? mockData.yourStakeRevealed : mockData.yourStake}
+              {showPrivateData ? parseFloat(plsBalance).toFixed(2) : '***.**'}
             </div>
-            <div className="text-xs text-green-500 mt-1 flex items-center gap-1">
-              <Lock className="w-3 h-3" />
-              Private
-            </div>
+            <div className="text-xs text-gray-600 mt-1">{parseFloat(plsBalance).toFixed(4)} PLS</div>
           </div>
 
           <div className="card group hover:border-yellow-500/30 transition-all duration-300">
@@ -468,9 +493,9 @@ function App() {
               <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500/60 group-hover:text-yellow-500 transition-colors" />
             </div>
             <div className="text-xl sm:text-2xl lg:text-3xl font-bold">
-              {showPrivateData ? mockData.pendingRewardsRevealed : mockData.pendingRewards}
+              {showPrivateData ? '0.00' : '**.**'}
             </div>
-            <div className="text-xs text-gray-600 mt-1">PLS tokens</div>
+            <div className="text-xs text-gray-600 mt-1">TEE computed</div>
           </div>
         </div>
       </section>
@@ -501,8 +526,8 @@ function App() {
               <div className="space-y-4 sm:space-y-6">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm text-gray-400">Amount</label>
-                    <span className="text-xs text-gray-600">Balance: {parseFloat(ethBalance).toFixed(4)} ETH</span>
+                    <label className="text-sm text-gray-400">Amount (WETH)</label>
+                    <span className="text-xs text-gray-600">Balance: {parseFloat(wethBalance).toFixed(4)} WETH</span>
                   </div>
                   <div className="relative">
                     <input
@@ -514,7 +539,7 @@ function App() {
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                       <button 
-                        onClick={() => setStakeAmount(parseFloat(ethBalance).toFixed(4))}
+                        onClick={() => setStakeAmount(parseFloat(wethBalance).toFixed(4))}
                         className="text-xs text-primary hover:text-primary-dark transition-colors"
                       >
                         MAX
@@ -651,11 +676,11 @@ function App() {
             {activeTab === 'rewards' && (
               <div className="space-y-6">
                 <div className="text-center py-6 sm:py-8">
-                  <p className="text-sm text-gray-500 mb-2">Claimable Rewards</p>
+                  <p className="text-sm text-gray-500 mb-2">Current APY</p>
                   <div className="text-4xl sm:text-5xl font-bold gradient-text mb-1">
-                    {showPrivateData ? mockData.pendingRewardsRevealed : mockData.pendingRewards}
+                    {apy}%
                   </div>
-                  <p className="text-gray-500">PLS tokens</p>
+                  <p className="text-xs text-gray-600 mt-2">Dynamic rate based on TVL</p>
                 </div>
 
                 <div className="glass p-3 sm:p-4 rounded-xl text-center">
