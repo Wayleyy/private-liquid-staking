@@ -513,24 +513,48 @@ function App() {
         </div>
       </section>
 
+      {/* Analytics Dashboard */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-3">Protocol Analytics</h2>
+          <p className="text-gray-400">Real-time metrics and performance data</p>
+        </div>
+        <DashboardAnalytics 
+          totalStaked={totalStaked}
+          apy={apy}
+          userBalance={ethBalance}
+          plsBalance={plsBalance}
+        />
+      </section>
+
+      {/* Privacy Metrics */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-3">Privacy Protection</h2>
+          <p className="text-gray-400">How your data is protected with iExec TEE</p>
+        </div>
+        <PrivacyMetricsDashboard 
+          userStaked={plsBalance}
+          totalStaked={totalStaked}
+        />
+      </section>
+
       {/* Staking Interface */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-24">
         <div className="max-w-lg mx-auto">
           <div className="card p-4 sm:p-6 lg:p-8">
             {/* Tab Navigation */}
-            <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2">
+            <div className="grid grid-cols-2 gap-2 mb-6 sm:mb-8">
               {[
                 { id: 'stake', label: 'Stake', icon: Lock },
                 { id: 'unstake', label: 'Unstake', icon: Unlock },
-                { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-                { id: 'privacy-metrics', label: 'Privacy', icon: Shield },
                 { id: 'rewards', label: 'Rewards', icon: Coins },
                 { id: 'history', label: 'History', icon: Activity }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-medium transition-all whitespace-nowrap text-sm sm:text-base flex items-center gap-2 ${
+                  className={`px-4 py-3 rounded-xl font-medium transition-all text-sm sm:text-base flex items-center justify-center gap-2 ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20'
                       : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-800'
@@ -701,24 +725,6 @@ function App() {
                 </div>
                 <TransactionHistory account={account} provider={provider} />
               </div>
-            )}
-
-            {/* Analytics Tab */}
-            {activeTab === 'analytics' && (
-              <DashboardAnalytics 
-                totalStaked={totalStaked}
-                apy={apy}
-                userBalance={ethBalance}
-                plsBalance={plsBalance}
-              />
-            )}
-
-            {/* Privacy Metrics Tab */}
-            {activeTab === 'privacy-metrics' && (
-              <PrivacyMetricsDashboard 
-                userStaked={plsBalance}
-                totalStaked={totalStaked}
-              />
             )}
 
             {/* Rewards Tab */}
