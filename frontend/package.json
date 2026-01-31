@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@biconomy/account": "^4.5.7",
+    "@biconomy/bundler": "^3.1.4",
+    "@biconomy/core-types": "^3.1.4",
+    "@biconomy/paymaster": "^3.1.4",
     "@iexec/dataprotector": "^2.0.0-beta.23",
     "ethers": "^6.9.0",
     "lucide-react": "^0.303.0",
