@@ -182,10 +182,114 @@ async function main() {
                 break;
             }
             
+            case 'bulk_calculate_rewards': {
+                const { stakesData, currentTimestamp, baseAPY } = input;
+                const timestamp = currentTimestamp || Math.floor(Date.now() / 1000);
+                const apy = baseAPY || 500;
+                
+                if (!stakesData || !Array.isArray(stakesData)) {
+                    result = { error: 'stakesData must be an array' };
+                    break;
+                }
+                
+                console.log(`Processing bulk rewards for ${stakesData.length} stakes...`);
+                
+                const bulkResults = stakesData.map((stakeData, index) => {
+                    try {
+                        const rewardResult = calculateRewards(stakeData, timestamp, apy);
+                        console.log(`Stake ${index + 1}/${stakesData.length}: ${rewardResult.rewards} rewards`);
+                        return {
+                            userAddress: stakeData.userAddress,
+                            rewards: rewardResult.rewards,
+                            proofHash: rewardResult.proofHash,
+                            proofData: rewardResult.proofData,
+                            success: true
+                        };
+                    } catch (error) {
+                        console.error(`Error processing stake ${index + 1}:`, error.message);
+                        return {
+                            userAddress: stakeData.userAddress,
+                            error: error.message,
+                            success: false
+                        };
+                    }
+                });
+                
+                const successCount = bulkResults.filter(r => r.success).length;
+                const totalRewards = bulkResults
+                    .filter(r => r.success)
+                    .reduce((sum, r) => sum + r.rewards, 0);
+                
+                result = {
+                    bulkResults,
+                    summary: {
+                        total: stakesData.length,
+                        successful: successCount,
+                        failed: stakesData.length - successCount,
+                        totalRewards
+                    }
+                };
+                
+                console.log(`Bulk processing complete: ${successCount}/${stakesData.length} successful`);
+                break;
+            }
+            
+            case 'bulk_verify_commitments': {
+                const { commitments } = input;
+                
+                if (!commitments || !Array.isArray(commitments)) {
+                    result = { error: 'commitments must be an array' };
+                    break;
+                }
+                
+                console.log(`Bulk verifying ${commitments.length} commitments...`);
+                
+                const verificationResults = commitments.map((item, index) => {
+                    try {
+                        const valid = verifyCommitment(item.commitment, item.revealData);
+                        console.log(`Commitment ${index + 1}/${commitments.length}: ${valid ? 'VALID' : 'INVALID'}`);
+                        return {
+                            commitment: item.commitment,
+                            userAddress: item.revealData.userAddress,
+                            valid,
+                            success: true
+                        };
+                    } catch (error) {
+                        console.error(`Error verifying commitment ${index + 1}:`, error.message);
+                        return {
+                            commitment: item.commitment,
+                            error: error.message,
+                            success: false
+                        };
+                    }
+                });
+                
+                const validCount = verificationResults.filter(r => r.success && r.valid).length;
+                
+                result = {
+                    verificationResults,
+                    summary: {
+                        total: commitments.length,
+                        valid: validCount,
+                        invalid: verificationResults.filter(r => r.success && !r.valid).length,
+                        errors: verificationResults.filter(r => !r.success).length
+                    }
+                };
+                
+                console.log(`Bulk verification complete: ${validCount}/${commitments.length} valid`);
+                break;
+            }
+            
             default:
                 result = {
                     message: 'Private Liquid Staking iApp ready',
-                    supportedActions: ['calculate_rewards', 'verify_commitment', 'aggregate_proof']
+                    supportedActions: [
+                        'calculate_rewards',
+                        'verify_commitment',
+                        'aggregate_proof',
+                        'bulk_calculate_rewards',
+                        'bulk_verify_commitments'
+                    ]
                 };
         }
         

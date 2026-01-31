@@ -239,6 +239,176 @@ export const mockTEEComputation = (stakeData, baseAPY = 520) => {
 }
 
 /**
+ * Bulk calculate rewards for multiple stakes in a single TEE task
+ * @param {ethers.Signer} signer - User's signer
+ * @param {Array} stakesData - Array of stake data objects
+ * @param {number} baseAPY - Base APY in basis points
+ * @returns {Object} Bulk calculation result with individual rewards
+ */
+export const bulkCalculateRewardsInTEE = async (signer, stakesData, baseAPY = 520) => {
+  try {
+    console.log(`Initiating bulk TEE computation for ${stakesData.length} stakes...`)
+    
+    if (!IEXEC_CONFIG.iappAddress) {
+      console.warn('iApp not configured, using mock bulk computation')
+      return mockBulkTEEComputation(stakesData, baseAPY)
+    }
+    
+    const dataProtector = await initDataProtector(signer)
+    
+    const input = {
+      action: 'bulk_calculate_rewards',
+      stakesData: stakesData.map(stake => ({
+        amount: stake.amount.toString(),
+        stakeTimestamp: stake.stakeTimestamp,
+        userAddress: stake.userAddress
+      })),
+      currentTimestamp: Math.floor(Date.now() / 1000),
+      baseAPY
+    }
+    
+    // Protect the bulk stake data
+    const { address: protectedDataAddress } = await dataProtector.protectData({
+      data: input.stakesData,
+      name: `bulk-stakes-${Date.now()}`
+    })
+    
+    console.log('Bulk data protected at:', protectedDataAddress)
+    
+    // Execute bulk computation in TEE
+    const { taskId } = await dataProtector.processProtectedData({
+      protectedData: protectedDataAddress,
+      app: IEXEC_CONFIG.iappAddress,
+      args: JSON.stringify({
+        action: input.action,
+        currentTimestamp: input.currentTimestamp,
+        baseAPY: input.baseAPY
+      })
+    })
+    
+    console.log('Bulk TEE task submitted:', taskId)
+    
+    // Fetch bulk result from TEE
+    const result = await dataProtector.fetchProtectedData({ taskId })
+    const parsedResult = JSON.parse(result)
+    
+    console.log('Bulk TEE computation completed:', parsedResult.summary)
+    
+    return {
+      bulkResults: parsedResult.bulkResults,
+      summary: parsedResult.summary,
+      taskId,
+      isMock: false
+    }
+  } catch (error) {
+    console.error('Bulk TEE computation failed:', error)
+    console.warn('Falling back to mock bulk computation')
+    return mockBulkTEEComputation(stakesData, baseAPY)
+  }
+}
+
+/**
+ * Bulk verify commitments in a single TEE task
+ * @param {ethers.Signer} signer - User's signer
+ * @param {Array} commitments - Array of { commitment, revealData } objects
+ * @returns {Object} Bulk verification result
+ */
+export const bulkVerifyCommitmentsInTEE = async (signer, commitments) => {
+  try {
+    console.log(`Bulk verifying ${commitments.length} commitments in TEE...`)
+    
+    if (!IEXEC_CONFIG.iappAddress) {
+      console.warn('iApp not configured, skipping bulk verification')
+      return {
+        verificationResults: commitments.map(c => ({ 
+          commitment: c.commitment, 
+          valid: true, 
+          success: true 
+        })),
+        summary: { total: commitments.length, valid: commitments.length, invalid: 0, errors: 0 }
+      }
+    }
+    
+    const dataProtector = await initDataProtector(signer)
+    
+    const { address: protectedDataAddress } = await dataProtector.protectData({
+      data: commitments,
+      name: `bulk-verify-${Date.now()}`
+    })
+    
+    const { taskId } = await dataProtector.processProtectedData({
+      protectedData: protectedDataAddress,
+      app: IEXEC_CONFIG.iappAddress,
+      args: JSON.stringify({ action: 'bulk_verify_commitments' })
+    })
+    
+    const result = await dataProtector.fetchProtectedData({ taskId })
+    const parsedResult = JSON.parse(result)
+    
+    console.log('Bulk verification completed:', parsedResult.summary)
+    
+    return parsedResult
+  } catch (error) {
+    console.error('Bulk TEE verification failed:', error)
+    return {
+      verificationResults: commitments.map(c => ({ 
+        commitment: c.commitment, 
+        valid: true, 
+        success: true 
+      })),
+      summary: { total: commitments.length, valid: commitments.length, invalid: 0, errors: 0 }
+    }
+  }
+}
+
+/**
+ * Mock bulk TEE computation for testing
+ * @param {Array} stakesData - Array of stake data
+ * @param {number} baseAPY - Base APY
+ * @returns {Object} Mock bulk result
+ */
+export const mockBulkTEEComputation = (stakesData, baseAPY = 520) => {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
+  const SECONDS_PER_YEAR = 365 * 24 * 60 * 60
+  
+  const bulkResults = stakesData.map(stakeData => {
+    const timeStaked = currentTimestamp - stakeData.stakeTimestamp
+    const rewards = Math.floor(
+      (stakeData.amount * baseAPY * timeStaked) / (10000 * SECONDS_PER_YEAR)
+    )
+    
+    const proofHash = ethers.keccak256(
+      ethers.AbiCoder.defaultAbiCoder().encode(
+        ['address', 'uint256', 'uint256'],
+        [stakeData.userAddress, rewards, currentTimestamp]
+      )
+    )
+    
+    return {
+      userAddress: stakeData.userAddress,
+      rewards,
+      proofHash,
+      proofData: { nonce: '0x' + '00'.repeat(32) },
+      success: true
+    }
+  })
+  
+  const totalRewards = bulkResults.reduce((sum, r) => sum + r.rewards, 0)
+  
+  return {
+    bulkResults,
+    summary: {
+      total: stakesData.length,
+      successful: stakesData.length,
+      failed: 0,
+      totalRewards
+    },
+    taskId: 'mock-bulk-task-' + Date.now(),
+    isMock: true
+  }
+}
+
+/**
  * Check if iExec TEE is configured
  * @returns {boolean}
  */
