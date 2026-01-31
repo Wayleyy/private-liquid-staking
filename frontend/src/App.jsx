@@ -5,6 +5,7 @@ import { calculateRewardsInTEE, mockTEEComputation, isTEEConfigured } from './li
 import { stakeWithCommitment, unstakeWithReveal, getPLSBalance, getTotalStaked, areContractsConfigured } from './lib/contracts'
 import TransactionHistory from './components/TransactionHistory'
 import PrivacyComparison from './components/PrivacyComparison'
+import WethWrapper from './components/WethWrapper'
 
 function App() {
   const [connected, setConnected] = useState(false)
@@ -244,10 +245,15 @@ function App() {
           status: 'completed'
         })
         
-        alert(`Staking successful!\n\nAmount: ${stakeAmount} WETH\nCommitment: ${result.commitment.slice(0, 10)}...\nTEE Task: ${teeResult.taskId}\n\n⚠️ SAVE YOUR SALT:\n${salt}\n\nYou will need this salt to unstake later!`)
-        
-        // Update balances
+        // Update balances immediately
         await updateBalances()
+        
+        // Force a second update after a delay to ensure contract state is updated
+        setTimeout(async () => {
+          await updateBalances()
+        }, 2000)
+        
+        alert(`Staking successful!\n\nAmount: ${stakeAmount} WETH\nCommitment: ${result.commitment.slice(0, 10)}...\nTEE Task: ${teeResult.taskId}\n\n⚠️ SAVE YOUR SALT:\n${salt}\n\nYou will need this salt to unstake later!\n\nYour balances are updating...`)
       } else {
         const commitment = ethers.keccak256(
           ethers.solidityPacked(
@@ -312,10 +318,15 @@ function App() {
           status: 'completed'
         })
         
-        alert(`Unstaking successful!\n\nAmount: ${result.amount} WETH returned\nTransaction: ${result.txHash.slice(0, 10)}...\n\nYour commitment has been revealed and removed.`)
-        
-        // Update balances
+        // Update balances immediately
         await updateBalances()
+        
+        // Force a second update after a delay
+        setTimeout(async () => {
+          await updateBalances()
+        }, 2000)
+        
+        alert(`Unstaking successful!\n\nAmount: ${result.amount} WETH returned\nTransaction: ${result.txHash.slice(0, 10)}...\n\nYour commitment has been revealed and removed.\n\nYour balances are updating...`)
       } else {
         alert(`Demo Mode: Contracts not deployed\n\nUnstaking ${unstakeAmount} WETH\n\nDeploy contracts to enable real unstaking.`)
       }
@@ -524,6 +535,21 @@ function App() {
             {/* Stake Tab */}
             {activeTab === 'stake' && (
               <div className="space-y-4 sm:space-y-6">
+                {/* Show WETH wrapper if balance is 0 */}
+                {parseFloat(wethBalance) === 0 && connected && (
+                  <WethWrapper 
+                    signer={signer} 
+                    ethBalance={ethBalance}
+                    onSuccess={updateBalances}
+                  />
+                )}
+                
+                {parseFloat(wethBalance) === 0 && connected && (
+                  <div className="text-center py-4 border-t border-gray-800">
+                    <p className="text-sm text-gray-500">↓ Wrap ETH first, then stake below ↓</p>
+                  </div>
+                )}
+                
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <label className="text-sm text-gray-400">Amount (WETH)</label>

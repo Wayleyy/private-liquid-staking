@@ -185,10 +185,14 @@ export const getPLSBalance = async (provider, address) => {
 export const getTotalStaked = async (provider) => {
   try {
     if (!CONTRACTS.privateStaking) return '0'
+    
+    // Create a fresh provider to bypass cache
+    const freshProvider = new ethers.JsonRpcProvider('https://arb1.arbitrum.io/rpc')
+    
     const privateStaking = new ethers.Contract(
       CONTRACTS.privateStaking,
       PrivateStakingABI.abi,
-      provider
+      freshProvider
     )
     const total = await privateStaking.totalStaked()
     return ethers.formatEther(total)
