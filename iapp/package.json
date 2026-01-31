@@ -2,13 +2,14 @@
   "name": "private-liquid-staking-iapp",
   "version": "1.0.0",
   "description": "iExec iApp for confidential reward computation in Private Liquid Staking",
+  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "test": "node src/app.js '{\"action\": \"calculate_rewards\"}'"
   },
   "dependencies": {
-    "@iexec/dataprotector": "^3.0.0",
+    "@iexec/dataprotector": "^2.0.0-beta.23",
     "ethers": "^6.9.0"
   },
   "engines": {

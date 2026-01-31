@@ -7,9 +7,9 @@
  * 3. Verify stake positions without exposing individual balances
  */
 
-const { IExecDataProtector } = require('@iexec/dataprotector');
-const { ethers } = require('ethers');
-const crypto = require('crypto');
+import { IExecDataProtector } from '@iexec/dataprotector';
+import { ethers } from 'ethers';
+import crypto from 'crypto';
 
 // Environment variables provided by iExec TEE
 const IEXEC_OUT = process.env.IEXEC_OUT || '/iexec_out';
