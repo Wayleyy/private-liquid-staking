@@ -39,6 +39,24 @@ Private Liquid Staking uses iExec's Confidential Computing to:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Features
+
+### Privacy-Preserving Technology
+- **iExec TEE Integration**: Confidential computations in Trusted Execution Environments
+- **Commitment Scheme**: Stake amounts hidden using cryptographic commitments
+- **Zero-Knowledge Proofs**: Verify rewards without revealing positions
+
+### Advanced Capabilities
+- **Account Abstraction**: Gasless transactions using Biconomy (ERC-4337)
+- **Bulk Processing**: Process multiple stakes in single TEE task for efficiency
+- **Real-time Rewards**: Dynamic APY based on total value locked
+
+### User Experience
+- **Modern UI**: React + TailwindCSS with responsive design
+- **Wallet Integration**: MetaMask and compatible Web3 wallets
+- **Transaction History**: Track all staking activities
+- **Privacy Toggle**: Compare private vs public staking
+
 ## Deployed Contracts
 
 The protocol is deployed on **Arbitrum One** (mainnet):
@@ -48,6 +66,10 @@ The protocol is deployed on **Arbitrum One** (mainnet):
 - **Staking Asset (WETH)**: `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1`
 
 Network: Arbitrum One (Chain ID: 42161)
+
+View contracts on Arbiscan:
+- [PLSToken](https://arbiscan.io/address/0x39b067f91a3cd342d7055cf832983c1f4e6a9f77)
+- [PrivateStaking](https://arbiscan.io/address/0x67ec0d5d810b3e2e402140f90cb8ce3a473baaae)
 
 ## Project Structure
 
@@ -110,10 +132,38 @@ npm test
 
 4. **Unstake**: Unstaking requests are processed confidentially, preventing front-running and whale tracking.
 
+## Documentation
+
+### Technical Documentation
+- [iExec TEE Integration](./IEXEC_INTEGRATION.md) - Complete guide to confidential computing integration
+- [Account Abstraction](./ACCOUNT_ABSTRACTION.md) - Gasless transactions with Biconomy
+- [Bulk Processing](./BULK_PROCESSING.md) - Efficient batch processing with iExec
+- [iApp Deployment](./iapp/DEPLOYMENT.md) - Deploy the TEE application
+- [Feedback](./feedback.md) - iExec tools feedback for hackathon
+
+### Smart Contracts
+- [PrivateStaking.sol](./contracts/src/PrivateStaking.sol) - Main staking contract
+- [PLSToken.sol](./contracts/src/PLSToken.sol) - Liquid staking token
+
+### Frontend
+- [App.jsx](./frontend/src/App.jsx) - Main React application
+- [iExec Integration](./frontend/src/lib/iexec.js) - TEE computation functions
+- [Account Abstraction](./frontend/src/lib/accountAbstraction.js) - Gasless transaction functions
+
+## Bonus Prize Eligibility
+
+This project qualifies for **both $300 RLC bonus prizes**:
+
+1. **Account Abstraction**: Implemented gasless transactions using Biconomy SDK
+2. **Bulk Processing**: Implemented batch processing for multiple stakes in single TEE task
+
+Total potential bonus: **$600 RLC**
+
 ## Links
 
 - [iExec Documentation](https://docs.iex.ec)
 - [Hack4Privacy Hackathon](https://dorahacks.io/hackathon/iexec-50partners-hack4privacy)
+- [GitHub Repository](https://github.com/Wayleyy/private-liquid-staking)
 
 ## License
 
