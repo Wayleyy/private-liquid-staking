@@ -1,5 +1,7 @@
 # Private Liquid Staking Protocol
 
+**Live Demo:** [https://private-liquid-staking.netlify.app](https://private-liquid-staking.netlify.app)
+
 > **Hack4Privacy Hackathon** - iExec x 50Partners
 
 Confidential Liquid Staking Protocol built with iExec TEE (Trusted Execution Environment) for the Hack4Privacy hackathon.
