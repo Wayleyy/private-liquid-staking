@@ -59,11 +59,16 @@ Private Liquid Staking uses iExec's Confidential Computing to:
 
 ## Deployed Contracts
 
-The protocol is deployed on **Arbitrum One** (mainnet):
+The protocol is deployed on **Arbitrum One** (mainnet) and **iExec Bellecour**:
 
+**Arbitrum One (Mainnet):**
 - **PLSToken**: `0x39b067f91a3cd342d7055cf832983c1f4e6a9f77`
 - **PrivateStaking**: `0x67ec0d5d810b3e2e402140f90cb8ce3a473baaae`
 - **Staking Asset (WETH)**: `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1`
+
+**iExec Bellecour:**
+- **iApp**: `0x5e5e3A621b26F23F9db42eC69Ef6BfF75374a069`
+- **Docker Image**: `docker.io/ywayleyy/private-liquid-staking:0.0.1`
 
 Network: Arbitrum One (Chain ID: 42161)
 

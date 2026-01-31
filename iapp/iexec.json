@@ -1,0 +1,18 @@
+{
+  "description": "Private Liquid Staking iApp - Confidential reward computation using iExec TEE. Calculates staking rewards, verifies commitments, and generates proofs without revealing individual stake amounts.",
+  "license": "MIT",
+  "author": "Wayley",
+  "social": {
+    "website": "https://github.com/Wayleyy/private-liquid-staking",
+    "github": "https://github.com/Wayleyy/private-liquid-staking"
+  },
+  "logo": "logo.png",
+  "buyConf": {},
+  "app": {
+    "owner": "0x44A9Eb810ffAFb611b4a00E6217A87ff3e762ba7",
+    "name": "private-liquid-staking",
+    "type": "DOCKER",
+    "multiaddr": "docker.io/ywayleyy/private-liquid-staking:0.0.1",
+    "checksum": "0xdf31d95474cae93b4d91943ec3eb16a8b1036e037afc492c8743f9ee9238dc96"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "message": "Private Liquid Staking iApp ready",
+  "supportedActions": [
+    "calculate_rewards",
+    "verify_commitment",
+    "aggregate_proof",
+    "bulk_calculate_rewards",
+    "bulk_verify_commitments"
+  ]
+}

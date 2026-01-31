@@ -7,9 +7,9 @@
  * 3. Verify stake positions without exposing individual balances
  */
 
-import { IExecDataProtector } from '@iexec/dataprotector';
 import { ethers } from 'ethers';
 import crypto from 'crypto';
+import fs from 'fs';
 
 // Environment variables provided by iExec TEE
 const IEXEC_OUT = process.env.IEXEC_OUT || '/iexec_out';
@@ -294,7 +294,6 @@ async function main() {
         }
         
         // Write result to iExec output
-        const fs = require('fs');
         const outputPath = `${IEXEC_OUT}/result.json`;
         fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
         
