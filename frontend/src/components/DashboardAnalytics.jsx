@@ -19,21 +19,26 @@ export default function DashboardAnalytics({ totalStaked, apy, userBalance, plsB
     const apyData = []
     const rewardsData = []
 
+    const currentTVL = parseFloat(totalStaked) || 0
+    const currentAPY = parseFloat(apy) || 5.2
+
     for (let i = days; i >= 0; i--) {
       const date = new Date(now - i * 24 * 60 * 60 * 1000)
       const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       
-      const baseTVL = parseFloat(totalStaked) || 100
-      const tvl = baseTVL * (0.5 + (days - i) / days * 0.5) + Math.random() * 10
+      // Simulate realistic TVL growth: start at 50% of current, grow to current
+      const growthFactor = 0.5 + (days - i) / days * 0.5
+      const tvl = currentTVL * growthFactor
       
-      const baseAPY = parseFloat(apy) || 5.2
-      const apyValue = baseAPY + Math.sin(i / 5) * 0.5 + Math.random() * 0.3
+      // APY inversely correlated with TVL (higher TVL = lower APY)
+      const apyValue = currentAPY + (1 - growthFactor) * 2
       
-      const rewards = (tvl * apyValue / 100 / 365) + Math.random() * 0.5
+      // Real daily rewards calculation based on TVL and APY
+      const dailyRewards = (tvl * apyValue / 100 / 365)
 
       tvlData.push({ date: dateStr, tvl: tvl.toFixed(2) })
       apyData.push({ date: dateStr, apy: apyValue.toFixed(2) })
-      rewardsData.push({ date: dateStr, rewards: rewards.toFixed(4) })
+      rewardsData.push({ date: dateStr, rewards: dailyRewards.toFixed(4) })
     }
 
     setTvlHistory(tvlData)
@@ -41,11 +46,16 @@ export default function DashboardAnalytics({ totalStaked, apy, userBalance, plsB
     setRewardsHistory(rewardsData)
   }
 
+  // Calculate real metrics from protocol data
+  const tvlValue = parseFloat(totalStaked) || 0
+  const userPosition = parseFloat(plsBalance) || 0
+  const dailyRewards = (tvlValue * parseFloat(apy) / 100 / 365).toFixed(4)
+
   const stats = [
     {
       title: 'Total Value Locked',
-      value: `${parseFloat(totalStaked).toFixed(2)} WETH`,
-      change: '+12.5%',
+      value: `${tvlValue.toFixed(2)} WETH`,
+      change: tvlValue > 0 ? `${tvlValue.toFixed(2)} WETH` : 'No stakes yet',
       icon: DollarSign,
       color: 'text-green-400',
       bgColor: 'bg-green-500/10'
@@ -53,24 +63,24 @@ export default function DashboardAnalytics({ totalStaked, apy, userBalance, plsB
     {
       title: 'Current APY',
       value: `${apy}%`,
-      change: '+0.3%',
+      change: 'Dynamic rate',
       icon: TrendingUp,
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/10'
     },
     {
       title: 'Your Position',
-      value: `${parseFloat(plsBalance).toFixed(4)} PLS`,
+      value: `${userPosition.toFixed(4)} PLS`,
       change: 'Private',
       icon: Shield,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/10'
     },
     {
-      title: 'Active Stakers',
-      value: '247',
-      change: '+18',
-      icon: Users,
+      title: 'Daily Rewards',
+      value: `${dailyRewards} WETH`,
+      change: 'Protocol-wide',
+      icon: Activity,
       color: 'text-orange-400',
       bgColor: 'bg-orange-500/10'
     }
@@ -218,8 +228,8 @@ export default function DashboardAnalytics({ totalStaked, apy, userBalance, plsB
                 <div className="text-xs text-gray-400">Verified</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-400">247</div>
-                <div className="text-xs text-gray-400">Anonymous Users</div>
+                <div className="text-2xl font-bold text-orange-400">{tvlValue.toFixed(1)}</div>
+                <div className="text-xs text-gray-400">WETH Locked</div>
               </div>
             </div>
           </div>
