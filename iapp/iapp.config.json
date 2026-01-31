@@ -1,10 +1,6 @@
 {
-  "name": "private-liquid-staking",
-  "language": "javascript",
-  "framework": "node",
-  "entrypoint": "src/app.js",
-  "docker": {
-    "image": "node:18-alpine",
-    "workdir": "/app"
-  }
+  "defaultChain": "bellecour",
+  "projectName": "private-liquid-staking",
+  "template": "JavaScript",
+  "appSecret": "Wayle"
 }
