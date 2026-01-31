@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import { Shield, Lock, Coins, TrendingUp, Eye, EyeOff, Wallet, ArrowRight, Menu, X, ChevronDown, Zap, Server, FileKey, CheckCircle } from 'lucide-react'
+import { Shield, Lock, Unlock, Coins, TrendingUp, Eye, EyeOff, Wallet, ArrowRight, Menu, X, ChevronDown, Zap, Server, FileKey, CheckCircle, BarChart3, Activity } from 'lucide-react'
 import { calculateRewardsInTEE, mockTEEComputation, isTEEConfigured } from './lib/iexec'
 import { stakeWithCommitment, unstakeWithReveal, getPLSBalance, getTotalStaked, areContractsConfigured } from './lib/contracts'
 import TransactionHistory from './components/TransactionHistory'
 import PrivacyComparison from './components/PrivacyComparison'
 import WethWrapper from './components/WethWrapper'
+import DashboardAnalytics from './components/DashboardAnalytics'
+import PrivacyMetricsDashboard from './components/PrivacyMetricsDashboard'
 
 function App() {
   const [connected, setConnected] = useState(false)
@@ -515,19 +517,27 @@ function App() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-24">
         <div className="max-w-lg mx-auto">
           <div className="card p-4 sm:p-6 lg:p-8">
-            {/* Tabs */}
-            <div className="flex gap-1 p-1 bg-dark rounded-xl mb-6 sm:mb-8 overflow-x-auto">
-              {['stake', 'unstake', 'rewards', 'history', 'privacy'].map((tab) => (
-                <button 
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 ${
-                    activeTab === tab 
-                      ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
-                      : 'text-gray-500 hover:text-gray-300'
+            {/* Tab Navigation */}
+            <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2">
+              {[
+                { id: 'stake', label: 'Stake', icon: Lock },
+                { id: 'unstake', label: 'Unstake', icon: Unlock },
+                { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+                { id: 'privacy-metrics', label: 'Privacy', icon: Shield },
+                { id: 'rewards', label: 'Rewards', icon: Coins },
+                { id: 'history', label: 'History', icon: Activity }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-medium transition-all whitespace-nowrap text-sm sm:text-base flex items-center gap-2 ${
+                    activeTab === tab.id
+                      ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20'
+                      : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-800'
                   }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
                 </button>
               ))}
             </div>
@@ -693,9 +703,22 @@ function App() {
               </div>
             )}
 
-            {/* Privacy Tab */}
-            {activeTab === 'privacy' && (
-              <PrivacyComparison />
+            {/* Analytics Tab */}
+            {activeTab === 'analytics' && (
+              <DashboardAnalytics 
+                totalStaked={totalStaked}
+                apy={apy}
+                userBalance={ethBalance}
+                plsBalance={plsBalance}
+              />
+            )}
+
+            {/* Privacy Metrics Tab */}
+            {activeTab === 'privacy-metrics' && (
+              <PrivacyMetricsDashboard 
+                userStaked={plsBalance}
+                totalStaked={totalStaked}
+              />
             )}
 
             {/* Rewards Tab */}
