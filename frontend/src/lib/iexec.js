@@ -3,12 +3,14 @@ import { ethers } from 'ethers'
 
 // iExec configuration
 const IEXEC_CONFIG = {
-  // iApp address (will be set after deployment)
-  iappAddress: process.env.VITE_IAPP_ADDRESS || '',
+  // iApp address deployed on iExec Arbitrum Sepolia
+  iappAddress: import.meta.env.VITE_IAPP_ADDRESS || '0xB9B3BBB3208D8fCF4571e6571b559E4B372795b8',
   // TEE Oracle address (from contract)
-  teeOracleAddress: process.env.VITE_TEE_ORACLE_ADDRESS || '',
-  // iExec network (bellecour for production, viviani for testnet)
-  network: 'bellecour',
+  teeOracleAddress: import.meta.env.VITE_TEE_ORACLE_ADDRESS || '',
+  // iExec network (arbitrum-sepolia-testnet for testing with RLC)
+  network: 'arbitrum-sepolia-testnet',
+  // Force real TEE mode (no mock fallback) - Set to true for real TEE demo
+  forceRealTEE: true,
 }
 
 /**
@@ -45,6 +47,9 @@ export const calculateRewardsInTEE = async (signer, stakeData, baseAPY = 520) =>
     
     // If iApp not configured, use mock
     if (!IEXEC_CONFIG.iappAddress) {
+      if (IEXEC_CONFIG.forceRealTEE) {
+        throw new Error('iApp address not configured. Set VITE_IAPP_ADDRESS in .env')
+      }
       console.warn('iApp not configured, using mock computation')
       return mockTEEComputation(stakeData, baseAPY)
     }
@@ -99,6 +104,9 @@ export const calculateRewardsInTEE = async (signer, stakeData, baseAPY = 520) =>
     }
   } catch (error) {
     console.error('TEE computation failed:', error)
+    if (IEXEC_CONFIG.forceRealTEE) {
+      throw new Error(`TEE computation failed: ${error.message}. Make sure you have RLC tokens.`)
+    }
     console.warn('Falling back to mock computation')
     return mockTEEComputation(stakeData, baseAPY)
   }
@@ -250,6 +258,9 @@ export const bulkCalculateRewardsInTEE = async (signer, stakesData, baseAPY = 52
     console.log(`Initiating bulk TEE computation for ${stakesData.length} stakes...`)
     
     if (!IEXEC_CONFIG.iappAddress) {
+      if (IEXEC_CONFIG.forceRealTEE) {
+        throw new Error('iApp address not configured. Set VITE_IAPP_ADDRESS in .env')
+      }
       console.warn('iApp not configured, using mock bulk computation')
       return mockBulkTEEComputation(stakesData, baseAPY)
     }
@@ -302,6 +313,9 @@ export const bulkCalculateRewardsInTEE = async (signer, stakesData, baseAPY = 52
     }
   } catch (error) {
     console.error('Bulk TEE computation failed:', error)
+    if (IEXEC_CONFIG.forceRealTEE) {
+      throw new Error(`Bulk TEE computation failed: ${error.message}. Make sure you have RLC tokens.`)
+    }
     console.warn('Falling back to mock bulk computation')
     return mockBulkTEEComputation(stakesData, baseAPY)
   }
@@ -413,5 +427,21 @@ export const mockBulkTEEComputation = (stakesData, baseAPY = 520) => {
  * @returns {boolean}
  */
 export const isTEEConfigured = () => {
-  return Boolean(IEXEC_CONFIG.iappAddress && IEXEC_CONFIG.teeOracleAddress)
+  return Boolean(IEXEC_CONFIG.iappAddress)
+}
+
+/**
+ * Get iExec configuration
+ * @returns {Object} Current iExec configuration
+ */
+export const getIExecConfig = () => {
+  return { ...IEXEC_CONFIG }
+}
+
+/**
+ * Set TEE mode (real or mock)
+ * @param {boolean} forceReal - If true, disable mock fallback
+ */
+export const setTEEMode = (forceReal) => {
+  IEXEC_CONFIG.forceRealTEE = forceReal
 }

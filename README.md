@@ -68,9 +68,11 @@ The protocol is deployed on **Arbitrum One** (mainnet) and **iExec Bellecour**:
 - **PrivateStaking**: `0x67ec0d5d810b3e2e402140f90cb8ce3a473baaae`
 - **Staking Asset (WETH)**: `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1`
 
-**iExec Bellecour:**
-- **iApp**: `0x5e5e3A621b26F23F9db42eC69Ef6BfF75374a069`
+**iExec Arbitrum Sepolia Testnet (TEE)**
+- **iApp Address**: `0xB9B3BBB3208D8fCF4571e6571b559E4B372795b8`
 - **Docker Image**: `docker.io/ywayleyy/private-liquid-staking:0.0.1`
+- **Owner**: `0x44A9Eb810ffAFb611b4a00E6217A87ff3e762ba7`
+- **Network**: Arbitrum Sepolia (ChainId: 421614)
 
 Network: Arbitrum One (Chain ID: 42161)
 
