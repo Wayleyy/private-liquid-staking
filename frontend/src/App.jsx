@@ -749,7 +749,11 @@ function App() {
                   </p>
                 </div>
 
-                <button disabled={!connected} className="btn-primary w-full py-3.5 sm:py-4 text-base">
+                <button 
+                  onClick={() => alert('Rewards are being computed by iExec TEE.\n\nYour rewards will be available once the TEE computation is verified on-chain.\n\nCurrent APY: ' + apy + '%')}
+                  disabled={!connected} 
+                  className="btn-primary w-full py-3.5 sm:py-4 text-base"
+                >
                   Claim Rewards
                 </button>
               </div>
