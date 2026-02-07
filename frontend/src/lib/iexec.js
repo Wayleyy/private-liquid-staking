@@ -9,8 +9,8 @@ const IEXEC_CONFIG = {
   teeOracleAddress: import.meta.env.VITE_TEE_ORACLE_ADDRESS || '',
   // iExec network (arbitrum-sepolia-testnet for testing with RLC)
   network: 'arbitrum-sepolia-testnet',
-  // Force real TEE mode (no mock fallback) - Set to true for real TEE demo
-  forceRealTEE: true,
+  // Force real TEE mode (no mock fallback) - Set to false to allow fallback when iExec service is unavailable
+  forceRealTEE: false,
 }
 
 /**
