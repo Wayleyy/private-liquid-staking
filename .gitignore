@@ -39,3 +39,9 @@ iexec-app.json
 
 # Local Netlify folder
 .netlify
+
+# AI Tools
+.cursor/
+.claude/
+*.cursor/
+*.claude/
