@@ -36,6 +36,9 @@ npm-debug.log*
 # iExec
 iexec-app.json
 .iexec-secrets/
+iapp/UTC--*
+iapp/output/
+iapp/iapp.config.json
 
 # Local Netlify folder
 .netlify

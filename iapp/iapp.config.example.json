@@ -1,0 +1,9 @@
+{
+  "defaultChain": "arbitrum-sepolia-testnet",
+  "projectName": "private-liquid-staking",
+  "template": "JavaScript",
+  "dockerhubUsername": "YOUR_DOCKERHUB_USERNAME",
+  "appSecret": "YOUR_APP_SECRET",
+  "deployedAppAddress": "0xB9B3BBB3208D8fCF4571e6571b559E4B372795b8",
+  "dockerhubAccessToken": "YOUR_DOCKERHUB_ACCESS_TOKEN"
+}

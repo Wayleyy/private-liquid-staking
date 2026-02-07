@@ -61,7 +61,7 @@ Private Liquid Staking uses iExec's Confidential Computing to:
 
 ## Deployed Contracts
 
-The protocol is deployed on **Arbitrum One** (mainnet) and **iExec Bellecour**:
+The protocol is deployed on **Arbitrum One** (mainnet) and **iExec Arbitrum Sepolia** (testnet):
 
 **Arbitrum One (Mainnet):**
 - **PLSToken**: `0x39b067f91a3cd342d7055cf832983c1f4e6a9f77`
