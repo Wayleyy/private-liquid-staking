@@ -371,11 +371,15 @@ function App() {
                   <div className="glass px-3 py-1.5 rounded-lg text-sm text-gray-400">
                     {showPrivateData ? plsBalance : '***.**'} PLS
                   </div>
-                  <div className="glass px-4 py-2 rounded-xl flex items-center gap-2">
+                  <button 
+                    onClick={() => { setConnected(false); setAccount(''); setProvider(null); setSigner(null); }}
+                    className="glass px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-red-500/10 hover:border-red-500/30 transition-all"
+                    title="Click to disconnect"
+                  >
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium">{account.slice(0, 6)}...{account.slice(-4)}</span>
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
-                  </div>
+                    <X className="w-4 h-4 text-gray-500 hover:text-red-400" />
+                  </button>
                 </div>
               ) : (
                 <button onClick={handleConnect} disabled={isLoading} className="btn-primary flex items-center gap-2 text-sm">
